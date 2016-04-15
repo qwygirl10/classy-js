@@ -23,15 +23,16 @@ var Class = function(child, parent) {
 		child.prototype.constructor  = child;
 
 		child.__super__ = parent;
-		var recursiveSuperClass = child;
+		
+		var recursiveSuperClass = parent;
 		child.prototype.super = function() {
-			var args = Array.prototype.splice.call(arguments, 1);
-			if(recursiveSuperClass.__super__ !== Object) {
-				recursiveSuperClass = recursiveSuperClass.__super__;
-			}else {
-				recursiveSuperClass = parent;
-			}
-			return recursiveSuperClass.prototype[arguments[0]].apply(this, args);
+	      var args = Array.prototype.splice.call(arguments, 1);
+	      var method = recursiveSuperClass.prototype[arguments[0]];
+	      recursiveSuperClass = recursiveSuperClass.__super__;
+	      if(!recursiveSuperClass.prototype[arguments[0]]) {
+	         recursiveSuperClass = parent;
+	      }
+	      return method && method.apply(this, args);
 		};
 	}else {
 		child.__super__ = Object;
